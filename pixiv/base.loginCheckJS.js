@@ -56,9 +56,6 @@ function publicFunc() {
     }
 
     u.isLogin = () => {
-        java.log(cache.get("csfrToken"))
-        java.log(typeof cache.get("csfrToken"))
-        java.log(getFromCache("csfrToken") !== null)
         // return JSON.parse(cache.get("csfrToken")) !== null
         return getFromCache("csfrToken") !== null
     }
@@ -400,30 +397,11 @@ function syncBlockAuthorList() {
     }
 }
 
-// function isLogin() {
-//     java.log(cache.get("csfrToken"))
-//     java.log(typeof cache.get("csfrToken"))
-//     java.log(getFromCache("csfrToken") !== null)
-//     // return JSON.parse(cache.get("csfrToken")) !== null
-//     return getFromCache("csfrToken") !== null
-// }
-
 publicFunc(); syncBlockAuthorList()
 if (result.code() === 200) {
     getPixivUid(); getCookie(); getHeaders()
-    if (!util.settings.FAST) {
-        checkMessageThread()   // 检测过度访问
-    }
-    if (!util.isLogin()) {
-        java.longToast("⚠️ 当前未登录账号\n\n请登录 Pixiv 账号")
-        if (source.bookSourceName.includes("备用")) {
-            sleepToast('我的 - 书源管理 - 三点菜单 - 登录 - 登录账号')
-        } else {
-            source.login()
-        }
-    }
+    if (!util.settings.FAST) checkMessageThread()   // 检测过度访问
 }
-
 util.debugFunc(() => {
     java.log(`DEBUG = ${util.settings.DEBUG}\n`)
     java.log(JSON.stringify(util.settings, null, 4))

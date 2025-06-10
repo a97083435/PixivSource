@@ -48,7 +48,7 @@ var seriesSet = {
 
 function getUserNovels() {
     if (!util.isLogin()) {
-        java.longToast("⚠️ 当前未登录账号\n\n请登录 Pixiv 账号")
+        sleepToast("⚠️ 当前未登录账号\n\n请登录 Pixiv 账号", 1.5)
         if (source.bookSourceName.includes("备用")) {
             sleepToast('我的 - 书源管理 - 三点菜单 - 登录 - 登录账号')
         } else {
