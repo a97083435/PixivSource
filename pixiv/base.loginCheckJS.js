@@ -34,7 +34,7 @@ function publicFunc() {
         settings.DEBUG = false              // 全局：调试模式
         java.log("⚙️ 使用默认设置（无自定义设置 或 自定义设置有误）")
     }
-    
+
     if (u.FAST === true) {
         settings.CONVERT_CHINESE = false      // 搜索：繁简通搜
         settings.SHOW_UPDATE_TIME = false     // 目录：显示章节更新时间
@@ -313,7 +313,7 @@ function checkMessageThread(checkTimes) {
     if (checkTimes === undefined) {
         checkTimes = Number(cache.get("checkTimes"))
     }
-    if (checkTimes === 0 && getFromCache("csfrToken")) {
+    if (checkTimes === 0 && isLogin()) {
         let latestMsg = getAjaxJson(urlMessageThreadLatest(5))
         if (latestMsg.error === true) {
             java.log(JSON.stringify(latestMsg))
@@ -392,12 +392,17 @@ function syncBlockAuthorList() {
     }
 }
 
+function isLogin() {
+    return getFromCache("csfrToken") !== null
+}
+
 publicFunc(); syncBlockAuthorList()
 if (result.code() === 200) {
-    getPixivUid(); getCsrfToken(); getCookie(); getHeaders()
-    if (!util.settings.FAST) checkMessageThread()  // 检测过度访问
-
-    if (getFromCache("csfrToken")) {
+    getPixivUid(); getCookie(); getHeaders()
+    if (!util.settings.FAST) {
+        checkMessageThread()   // 检测过度访问
+    }
+    if (!isLogin()) {
         sleepToast("⚠️ 当前未登录账号\n\n请登录 Pixiv 账号")
         source.login()
     }
