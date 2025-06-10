@@ -47,13 +47,11 @@ var seriesSet = {
 };
 
 function getUserNovels() {
+    // cache.delete("csfrToken")
     if (!util.isLogin()) {
         sleepToast("⚠️ 当前未登录账号\n\n请登录 Pixiv 账号", 1.5)
-        if (source.bookSourceName.includes("备用")) {
-            sleepToast('我的 - 书源管理 - 三点菜单 - 登录 - 登录账号')
-        } else {
-            source.login()
-        }
+        util.removeCookie(); util.login()
+        sleepToast("登录成功后，请重新搜索", 2)
         return []
     }
 
@@ -120,21 +118,23 @@ function getUserNovels() {
             let returnList = getAjaxJson(urlSeriesNovelsTitles(seriesId)).body
             returnList.map(novel => {return seriesNovelIds.push(novel.id)})
         })
+        // java.log(`有系列的小说ID：${JSON.stringify(seriesNovelIds)}`)
+        // java.log(JSON.stringify(seriesNovelIds.length))
 
         // 获取单篇小说
         if (novelIds.length >= 1) {
             novelIds = novelIds.filter(novelid => (!seriesNovelIds.includes(novelid)))
             novelIds = novelIds.reverse().slice((page - 1) * 20, page * 20)
+            // java.log(`真单篇的小说ID：${JSON.stringify(novelIds)}`)
+            // java.log(JSON.stringify(novelIds.length))
             let novelUrls = novelIds.map(novelId => {return urlNovelDetailed(novelId)})
+            // java.log(JSON.stringify(novelUrls))
+            // cache.delete(novelUrls)
             novels = novels.concat(getAjaxAllJson(novelUrls).map(resp => resp.body))
         }
     }
     util.debugFunc(() => {
         java.log(`获取用户搜索小说结束`)
-        java.log(`有系列的小说ID：${JSON.stringify(seriesNovelIds)}`)
-        java.log(seriesNovelIds.length)
-        java.log(`真单篇的小说ID：${JSON.stringify(novelIds)}`)
-        java.log(JSON.stringify(novelIds.length))
     })
     return novels
 }
