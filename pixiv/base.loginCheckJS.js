@@ -408,15 +408,16 @@ publicFunc(); syncBlockAuthorList()
 if (result.code() === 200) {
     getPixivUid(); getCsrfToken(); getCookie(); getHeaders()
     if (!util.settings.FAST) checkMessageThread()  // 检测过度访问
-//     if (isHtmlString(result.body())) {  // 检测登录
-//         let loginStatus = getWebviewJson(baseUrl, html => {
-//             return JSON.stringify(html.match(/login:\s*'([^']+)'/)[1])
-//         })
-//         if (loginStatus !== "yes") sleepToast("请登录")
-//     }
-// } else if (result.code() === 400) {
-//     sleepToast("请重新登录")
-//     source.login()
+    if (isHtmlString(result.body())) {  // 检测登录
+        let loginStatus = getWebviewJson(baseUrl, html => {
+            return JSON.stringify(html.match(/login:\s*'([^']+)'/)[1])
+        })
+        // java.log(loginStatus)
+        if (loginStatus !== "yes") {
+            sleepToast("⚠️ 当前未登录账号\n\n请登录 Pixiv 账号")
+            source.login()
+        }
+    }
 }
 
 util.debugFunc(() => {
