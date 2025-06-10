@@ -64,7 +64,8 @@ function publicFunc() {
     }
 
     u.login = function() {
-        let resp = java.startBrowserAwait(`https://accounts.pixiv.net/login,{"headers": {"User-Agent": "${cache.get("userAgent")}"}}`, '登录账号', false)
+        let resp = java.startBrowserAwait(`https://accounts.pixiv.net/login,
+    {"headers": {"User-Agent": "${java.getWebViewUA()}"}}`, '登录账号', false)
         if (resp.code() === 200) {
             this.getCookie(); this.getCsrfToken()
         } else {
@@ -446,7 +447,7 @@ function syncBlockAuthorList() {
 
 publicFunc(); syncBlockAuthorList()
 if (result.code() === 200) {
-    getPixivUid(); getHeaders(); util.getCookie()
+    getPixivUid(); util.getCookie(); getHeaders()
     if (!util.settings.FAST) checkMessageThread()   // 检测过度访问
 }
 util.debugFunc(() => {
