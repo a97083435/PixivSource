@@ -19,7 +19,7 @@ function logout() {
     removeCookie()
     java.startBrowser("https://www.pixiv.net/logout.php", "退出账号")
     removeCookie()
-    sleepToast(`✅已退出当前账号\n\n退出后请点击右上角的 ✔️ 退出\n\n登录请点击【登录账号】进行登录`)
+    sleepToast(`✅ 已退出当前账号\n\n退出后请点击右上角的 ✔️ 退出\n\n登录请点击【登录账号】进行登录`)
 }
 
 function removeCookie() {
