@@ -56,9 +56,9 @@ function publicFunc() {
     }
 
     u.isLogin = function() {
-        java.log(getFromCache("csfrToken"))
-        java.log(typeof getFromCache("csfrToken"))
-        java.log(getFromCache("csfrToken") !== null)
+        // java.log(getFromCache("csfrToken"))
+        // java.log(typeof getFromCache("csfrToken"))
+        // java.log(getFromCache("csfrToken") !== null)
         // return JSON.parse(cache.get("csfrToken")) !== null
         return getFromCache("csfrToken") !== null
     }
