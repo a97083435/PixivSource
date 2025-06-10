@@ -11,15 +11,11 @@ function objParse(obj) {
     })
 }
 
-function isLogin() {
-    return getFromCache("csfrToken") !== null
-}
-
 function handlerFactory() {
     if (baseUrl.includes("https://cdn.jsdelivr.net")) {
         return () => {updateSource(); return []}
     }
-    if (!isLogin()) {
+    if (!util.isLogin()) {
         return handlerNoLogin()
     }
     if (baseUrl.includes("/bookmark")) {

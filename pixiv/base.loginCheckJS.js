@@ -55,6 +55,14 @@ function publicFunc() {
         }
     }
 
+    u.isLogin = () => {
+        java.log(cache.get("csfrToken"))
+        java.log(typeof cache.get("csfrToken"))
+        java.log(getFromCache("csfrToken") !== null)
+        // return JSON.parse(cache.get("csfrToken")) !== null
+        return getFromCache("csfrToken") !== null
+    }
+
     // 将多个长篇小说解析为一本书
     u.combineNovels = function (novels) {
         return novels.filter(novel => {
@@ -313,7 +321,7 @@ function checkMessageThread(checkTimes) {
     if (checkTimes === undefined) {
         checkTimes = Number(cache.get("checkTimes"))
     }
-    if (checkTimes === 0 && isLogin()) {
+    if (checkTimes === 0 && util.isLogin()) {
         let latestMsg = getAjaxJson(urlMessageThreadLatest(5))
         if (latestMsg.error === true) {
             java.log(JSON.stringify(latestMsg))
@@ -392,9 +400,13 @@ function syncBlockAuthorList() {
     }
 }
 
-function isLogin() {
-    return getFromCache("csfrToken") !== null
-}
+// function isLogin() {
+//     java.log(cache.get("csfrToken"))
+//     java.log(typeof cache.get("csfrToken"))
+//     java.log(getFromCache("csfrToken") !== null)
+//     // return JSON.parse(cache.get("csfrToken")) !== null
+//     return getFromCache("csfrToken") !== null
+// }
 
 publicFunc(); syncBlockAuthorList()
 if (result.code() === 200) {
@@ -402,7 +414,7 @@ if (result.code() === 200) {
     if (!util.settings.FAST) {
         checkMessageThread()   // 检测过度访问
     }
-    if (!isLogin()) {
+    if (!util.isLogin()) {
         java.longToast("⚠️ 当前未登录账号\n\n请登录 Pixiv 账号")
         if (source.bookSourceName.includes("备用")) {
             sleepToast('我的 - 书源管理 - 三点菜单 - 登录 - 登录账号')
