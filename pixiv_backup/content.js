@@ -13,7 +13,7 @@ function objParse(obj) {
 function getContent(res) {
     // 放入信息以便登陆界面使用，第一次加载，刷新时准确
     let novel = source.getLoginInfoMap()
-    if (res.seriesNavData !== null) {
+    if (res.seriesNavData !== undefined && res.seriesNavData !== null) {
         let seriesId = res.seriesNavData.seriesId
         if (seriesId !== undefined && seriesId !== null) {
             let novelIds = getFromCache(`novelIds${seriesId}`)
