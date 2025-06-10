@@ -52,7 +52,7 @@ function isLogin() {
 
 function getUserNovels() {
     if (!isLogin()) {
-        sleepToast("⚠️ 当前未登录账号\n\n请登录 Pixiv 账号")
+        java.longToast("⚠️ 当前未登录账号\n\n请登录 Pixiv 账号")
         if (source.bookSourceName.includes("备用")) {
             sleepToast('我的 - 书源管理 - 三点菜单 - 登录 - 登录账号')
         } else {
