@@ -313,7 +313,7 @@ function checkMessageThread(checkTimes) {
     if (checkTimes === undefined) {
         checkTimes = Number(cache.get("checkTimes"))
     }
-    if (checkTimes === 0 && isLogin()) {
+    if (checkTimes === 0 && getFromCache("csfrToken")) {
         let latestMsg = getAjaxJson(urlMessageThreadLatest(5))
         if (latestMsg.error === true) {
             java.log(JSON.stringify(latestMsg))
@@ -409,7 +409,7 @@ if (result.code() === 200) {
     getPixivUid(); getCsrfToken(); getCookie(); getHeaders()
     if (!util.settings.FAST) checkMessageThread()  // 检测过度访问
 
-    if (!getFromCache("csfrToken")) {
+    if (getFromCache("csfrToken")) {
         sleepToast("⚠️ 当前未登录账号\n\n请登录 Pixiv 账号")
         source.login()
     }

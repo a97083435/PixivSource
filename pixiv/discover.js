@@ -15,7 +15,7 @@ function handlerFactory() {
     if (baseUrl.includes("https://cdn.jsdelivr.net")) {
         return () => {updateSource(); return []}
     }
-    if (!isLogin()) {
+    if (!getFromCache("csfrToken")) {
         return handlerNoLogin()
     }
     if (baseUrl.includes("/bookmark")) {

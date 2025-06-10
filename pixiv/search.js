@@ -47,7 +47,7 @@ var seriesSet = {
 };
 
 function getUserNovels() {
-    if (!isLogin()) {
+    if (!getFromCache("csfrToken")) {
         return []
     }
 
