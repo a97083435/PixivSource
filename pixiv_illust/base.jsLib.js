@@ -55,12 +55,6 @@ function getWebviewJson(url, parseFunc) {
     })
 }
 
-function isLogin() {
-    const {java} = this
-    let cookie = String(java.getCookie("https://www.pixiv.net/", null))
-    return cookie.includes("first_visit_datetime")
-}
-
 function urlIllustUrl(illustId) {
     return `https://www.pixiv.net/artworks/${illustId}`
 }

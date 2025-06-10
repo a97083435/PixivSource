@@ -38,6 +38,79 @@ function publicFunc() {
         }
     }
 
+    u.isLogin = function() {
+        return getFromCache("csfrToken") !== null
+    }
+
+    u.login = function() {
+        let resp = java.startBrowserAwait(`https://accounts.pixiv.net/login,
+    {"headers": {"User-Agent": "${java.getWebViewUA()}"}}`, '登录账号', false)
+        if (resp.code() === 200) {
+            this.getCookie(); this.getCsrfToken()
+        } else {
+            java.log(resp.code()); sleepToast("⚠️ 登录失败")
+        }
+    }
+
+    u.logout = function() {
+        this.removeCookie()
+        java.startBrowser("https://www.pixiv.net/logout.php", "退出账号")
+        this.removeCookie()
+        sleepToast(`✅ 已退出当前账号\n\n退出后请点击右上角的 ✔️ 退出\n\n登录请点击【登录账号】进行登录`)
+    }
+
+    u.getCookie = function() {
+        let pixivCookie = String(java.getCookie("https://www.pixiv.net/", null))
+        if (pixivCookie.includes("first_visit_datetime")) {
+            // java.log(pixivCookie)
+            cache.put("pixivCookie", pixivCookie, 60*60)
+            return pixivCookie
+        }
+    }
+
+    u.removeCookie = function() {
+        cookie.removeCookie('https://www.pixiv.net')
+        cookie.removeCookie('https://accounts.pixiv.net')
+        cookie.removeCookie('https://accounts.google.com')
+        cookie.removeCookie('https://api.weibo.com')
+        cache.delete("pixivCookie")
+        cache.delete("csfrToken")  // 与登录设备有关
+        cache.delete("headers")
+    }
+
+    // 获取 Csrf Token，以便进行收藏等请求
+    // 获取方法来自脚本 Pixiv Previewer
+    // https://github.com/Ocrosoft/PixivPreviewer
+    // https://greasyfork.org/zh-CN/scripts/30766-pixiv-previewer/code
+    u.getCsrfToken = function() {
+        let csfrToken
+        let html = java.webView(null, "https://www.pixiv.net/", null)
+        try {
+            csfrToken = JSON.stringify(html.match(/token\\":\\"([a-z0-9]{32})/)[1])
+        } catch (e) {
+            csfrToken = null
+        }
+        // java.log(csfrToken)
+        cache.put("csfrToken", JSON.stringify(csfrToken))  // 与登录设备有关
+        return csfrToken
+    }
+
+    // 将多个长篇小说解析为一本书
+    u.combineNovels = function(novels) {
+        return novels.filter(novel => {
+            // 单本直接解析为一本书
+            if (novel.seriesId === undefined || novel.seriesId === null) {
+                return true
+            }
+            // 集合中没有该系列解析为一本书
+            if (!seriesSet.has(novel.seriesId)) {
+                seriesSet.add(novel.seriesId)
+                return true
+            }
+            return false
+        })
+    }
+
     u.handIllusts = function (illusts) {
         illusts.forEach(illust => {
             // illust.id = illust.id
@@ -140,11 +213,45 @@ function publicFunc() {
     java.put("util", objStringify(u))
 }
 
-publicFunc()
-
 // 获取请求的user id方便其他ajax请求构造
-let uid = java.getResponse().headers().get("x-userid")
-if (uid != null) {
-    cache.put("pixiv:uid", uid)
+function getPixivUid() {
+    let uid = java.getResponse().headers().get("x-userid")
+    if (uid != null) {
+        cache.put("pixiv:uid", String(uid))
+    }
 }
+
+function getBlockAuthorsFromSource() {
+    let authors = []
+    try {
+        authors = JSON.parse(`[${source.getVariable()}]`)
+        // sleepToast(JSON.stringify(authors))
+    } catch (e) {
+        sleepToast("🚫 屏蔽作者\n⚠️ 【书源】源变量设置有误\n输入作者ID，以英文逗号间隔，保存")
+    }
+    return authors
+}
+
+function syncBlockAuthorList() {
+    let authors1 = getFromCache("blockAuthorList")
+    let authors2 = getBlockAuthorsFromSource()
+    if (authors1 === null) {
+        cache.put("blockAuthorList", JSON.stringify(authors2))
+    } else if (authors1.length > authors2.length) {
+        cache.put("blockAuthorList", JSON.stringify(authors2))
+        java.log("屏蔽作者：已将源变量同步至内存")
+    }
+}
+
+publicFunc(); syncBlockAuthorList()
+if (result.code() === 200) {
+    getPixivUid(); util.getCookie()
+}
+util.debugFunc(() => {
+    java.log(`DEBUG = ${util.settings.DEBUG}\n`)
+    java.log(JSON.stringify(util.settings, null, 4))
+    java.log(`${java.getUserAgent()}\n`)
+    java.log(`${cache.get("csfrToken")}\n`)
+    java.log(`${cache.get("pixivCookie")}\n`)
+})
 java.getStrResponse(null, null)
