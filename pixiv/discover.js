@@ -15,6 +15,7 @@ function handlerFactory() {
     if (baseUrl.includes("https://cdn.jsdelivr.net")) {
         return () => {updateSource(); return []}
     }
+    // cache.delete("csfrToken")
     if (!util.isLogin()) {
         return handlerNoLogin()
     }
@@ -66,11 +67,8 @@ function handlerFactory() {
 function handlerNoLogin() {
     return () => {
         sleepToast("⚠️ 当前未登录账号\n\n请登录 Pixiv 账号", 1.5)
-        if (source.bookSourceName.includes("备用")) {
-            sleepToast('发现 - 长按"Pixiv" - 登录 - 登录账号')
-        } else {
-            source.login()
-        }
+        util.removeCookie(); util.login()
+        sleepToast("登录成功后，请重新进入发现", 2)
         return []
     }
 }
