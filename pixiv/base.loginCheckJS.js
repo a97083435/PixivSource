@@ -205,6 +205,7 @@ function publicFunc() {
                 novel.tags.unshift("单本")
                 novel.latestChapter = novel.title
                 novel.detailedUrl = urlNovelDetailed(novel.id)
+                novel.total = 1
             }
             if (novel.seriesId !== undefined && detailed === false) {
                 novel.id = novel.seriesId
@@ -227,6 +228,9 @@ function publicFunc() {
                 novel.textCount = series.publishedTotalCharacterCount
                 novel.description = series.caption
                 novel.coverUrl = series.cover.urls["480mw"]
+                novel.createDate = series.createDate
+                novel.updateDate = series.updateDate
+                novel.total = series.publishedContentCount
 
                 // 发送请求获取第一章 获取标签与简介
                 let firstNovel = {}
@@ -258,11 +262,14 @@ function publicFunc() {
     // 小说信息格式化
     u.formatNovels = function(novels) {
         novels.forEach(novel => {
-            novel.title = novel.title.replace(RegExp(/^\s+|\s+$/g), "")
-            novel.coverUrl = urlCoverUrl(novel.coverUrl)
+            book.name = novel.title = novel.title.replace(RegExp(/^\s+|\s+$/g), "")
+            book.author = novel.userName
+            book.coverUrl = novel.coverUrl = urlCoverUrl(novel.coverUrl)
             novel.readingTime = `${novel.readingTime / 60} 分钟`
             novel.createDate = dateFormat(novel.createDate);
             novel.updateDate = dateFormat(novel.updateDate);
+            book.totalChapterNum = novel.total
+            book.wordCount = novel.textCount
 
             novel.tags2 = []
             for (let i in novel.tags) {
@@ -275,12 +282,12 @@ function publicFunc() {
                 }
             }
             novel.tags = Array.from(new Set(novel.tags2))
-            novel.tags = novel.tags.join(",")
+            book.kind = novel.tags = novel.tags.join(",")
 
             if (util.settings.MORE_INFORMATION) {
-                novel.description = `\n书名：${novel.title}\n作者：${novel.userName}\n标签：${novel.tags}\n上传：${novel.createDate}\n更新：${novel.updateDate}\n简介：${novel.description}`
+                book.intro = novel.description = `\n书名：${novel.title}\n作者：${novel.userName}\n标签：${novel.tags}\n上传：${novel.createDate}\n更新：${novel.updateDate}\n简介：${novel.description}`
             } else {
-                novel.description = `\n${novel.description}\n上传时间：${novel.createDate}\n更新时间：${novel.updateDate}`
+                book.intro = novel.description = `\n${novel.description}\n上传时间：${novel.createDate}\n更新时间：${novel.updateDate}`
             }
         })
         return novels
