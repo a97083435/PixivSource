@@ -1,7 +1,7 @@
 function login() {
     sleepToast("🔄 正在检测登陆状态，请稍候")
     if (getCookie() && getCsrfToken()) {
-        sleepToast("✅ 已经登录过账号了\n可以点击【🔙 退出账号】来切换账号")
+        sleepToast("✅ 已经登录过账号了\n\n可以点击【🔙 退出账号】来切换账号")
         return false
     }
 
@@ -352,7 +352,7 @@ function startGithubReadme() {
     startBrowser("https://github.com/windyhusky/PixivSource/blob/main/doc/Pixiv.md", "使用指南")
 }
 
-function charpterRead() {
+function charpterReading() {
     let novel = source.getLoginInfoMap()
     sleepToast(`📌 当前章节\n
     系列：${novel.seriesTitle}
@@ -362,15 +362,13 @@ function charpterRead() {
 }
 
 function readMeLogin() {
-    let novel = source.getLoginInfoMap()
-    sleepToast(`🅿️ 登录界面功能说明
+    return sleepToast(`🅿️ 登录界面功能说明\n
     使用收藏、追更、关注作者、评论等功能时，请先刷新正文，获取当前章节信息
     点击【📌 当前章节】查看书源内部章节信息`, 5)
 }
 
 function readMeSearch() {
-    let novel = source.getLoginInfoMap()
-    sleepToast(`🔍 搜索说明
+    return sleepToast(`🔍 搜索说明\n
     标签之间需要以【空格】间隔
     👤 作者专搜：@搜索作者名称
     #️ 标签专搜：#标签1 标签2　
@@ -403,6 +401,13 @@ function editSettings(object) {
     }
     sleepToast(msg)
     cache.put("pixivSettings", JSON.stringify(settings))
+}
+
+function cleanCache() {
+    let novel = source.getLoginInfoMap()
+    cache.delete(`${urlNovelUrl(novel.id)}`)
+    cache.delete(`${urlNovelDetailed(novel.id)}`)
+    sleepToast(`🧹 清除缓存\n\n已清除本章正文缓存，刷新正文以更新`, 5)
 }
 
 function sleepToast(text, second) {
